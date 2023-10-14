@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public interface BeerService {
-    Mono<BeerDTO> saveBeer(BeerDTO beerDTO);
+    Mono<BeerDTO> saveBeer(Mono<BeerDTO> beerDTO);
 
     Mono<BeerDTO> getById(String beerId);
 }
