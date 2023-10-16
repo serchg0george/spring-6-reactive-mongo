@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.PATH;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
@@ -39,11 +40,25 @@ class BeerServiceImplTest {
     }
 
     @Test
-    void findFirstByBeerNameTest() {
-        BeerDTO beerDTO = getSavedBeerDto();
+    void testFindByBeerStyle() {
+        BeerDTO beerDto = getSavedBeerDto();
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
-        Mono<BeerDTO> foundDto = beerService.findFirstByBeerName(beerDTO.getBeerName());
+        beerService.findByBeerStyle(beerDto.getBeerStyle())
+                .subscribe(dto -> {
+                    System.out.println(dto.toString());
+                    atomicBoolean.set(true);
+                });
+
+        await().untilTrue(atomicBoolean);
+    }
+
+    @Test
+    void testFindFirstByBeerNameTest() {
+        BeerDTO beerDto = getSavedBeerDto();
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
+        Mono<BeerDTO> foundDto = beerService.findFirstByBeerName(beerDto.getBeerName());
 
         foundDto.subscribe(dto -> {
             System.out.println(dto.toString());
