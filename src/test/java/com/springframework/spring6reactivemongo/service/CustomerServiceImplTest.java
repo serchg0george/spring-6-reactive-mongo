@@ -38,6 +38,21 @@ class CustomerServiceImplTest {
     }
 
     @Test
+    void findFirstByCustomerName() {
+        CustomerDTO customerDTO = getSavedCustomerDto();
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
+        Mono<CustomerDTO> foundDto = customerService.findFirstByCustomerName(customerDTO.getCustomerName());
+
+        foundDto.subscribe(dto -> {
+            System.out.println(dto.toString());
+            atomicBoolean.set(true);
+        });
+
+        await().untilTrue(atomicBoolean);
+    }
+
+    @Test
     @DisplayName("Test Save Customer Using Subscriber")
     void testSaveCustomerUseSubscriber() {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
