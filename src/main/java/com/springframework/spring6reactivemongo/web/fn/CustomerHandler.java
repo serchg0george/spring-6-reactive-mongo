@@ -14,6 +14,20 @@ import reactor.core.publisher.Mono;
 public class CustomerHandler {
     private final CustomerService customerService;
 
+    public Mono<ServerResponse> patchCustomerById(ServerRequest request) {
+        return request.bodyToMono(CustomerDTO.class)
+                .flatMap(customerDTO -> customerService
+                        .patchCustomer(request.pathVariable("customerId"), customerDTO))
+                .flatMap(savedDto -> ServerResponse.noContent().build());
+    }
+
+    public Mono<ServerResponse> updateCustomerById(ServerRequest request) {
+        return request.bodyToMono(CustomerDTO.class)
+                .flatMap(customerDTO -> customerService
+                        .updateCustomer(request.pathVariable("customerId"), customerDTO))
+                .flatMap(savedDto -> ServerResponse.noContent().build());
+    }
+
     public Mono<ServerResponse> createCustomer(ServerRequest request) {
         return customerService.saveCustomer(request.bodyToMono(CustomerDTO.class))
                 .flatMap(customerDTO -> ServerResponse

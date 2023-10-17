@@ -24,6 +24,8 @@ public class CustomerRouterConfig {
                 .GET(CUSTOMER_PATH, accept(APPLICATION_JSON), customerHandler::listCustomer)
                 .GET(CUSTOMER_PATH_ID, accept(APPLICATION_JSON), customerHandler::getCustomerById)
                 .POST(CUSTOMER_PATH, accept(APPLICATION_JSON), customerHandler::createCustomer)
+                .PUT(CUSTOMER_PATH_ID, accept(APPLICATION_JSON), customerHandler::updateCustomerById)
+                .PATCH(CUSTOMER_PATH_ID, accept(APPLICATION_JSON), customerHandler::patchCustomerById)
                 .build();
     }
 }

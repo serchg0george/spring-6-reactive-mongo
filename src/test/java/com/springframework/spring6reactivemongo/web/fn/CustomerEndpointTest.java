@@ -44,7 +44,7 @@ public class CustomerEndpointTest {
                 .uri(CustomerRouterConfig.CUSTOMER_PATH_ID, customerDTO.getId())
                 .body(Mono.just(customerDTO), CustomerDTO.class)
                 .exchange()
-                .expectStatus().isNotFound();
+                .expectStatus().isNoContent();
     }
 
     @Test
@@ -93,6 +93,7 @@ public class CustomerEndpointTest {
     @Order(3)
     void testUpdateCustomer() {
         CustomerDTO customerDTO = getSavedTestCustomer();
+        customerDTO.setCustomerName("New Customer");
 
         webTestClient.put()
                 .uri(CustomerRouterConfig.CUSTOMER_PATH_ID, customerDTO.getId())
