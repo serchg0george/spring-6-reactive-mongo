@@ -3,9 +3,11 @@ package com.springframework.spring6reactivemongo.web.fn;
 import com.springframework.spring6reactivemongo.model.CustomerDTO;
 import com.springframework.spring6reactivemongo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +17,9 @@ public class CustomerHandler {
     private final CustomerService customerService;
 
     public Mono<ServerResponse> deleteCustomerById(ServerRequest request) {
-        return customerService.deleteCustomerById(request.pathVariable("customerId"))
+        return customerService.getCustomerById(request.pathVariable("customerId"))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .flatMap(customerDTO -> customerService.deleteCustomerById(customerDTO.getId()))
                 .then(ServerResponse.noContent().build());
     }
 
@@ -23,6 +27,7 @@ public class CustomerHandler {
         return request.bodyToMono(CustomerDTO.class)
                 .flatMap(customerDTO -> customerService
                         .patchCustomer(request.pathVariable("customerId"), customerDTO))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .flatMap(savedDto -> ServerResponse.noContent().build());
     }
 
@@ -30,6 +35,7 @@ public class CustomerHandler {
         return request.bodyToMono(CustomerDTO.class)
                 .flatMap(customerDTO -> customerService
                         .updateCustomer(request.pathVariable("customerId"), customerDTO))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .flatMap(savedDto -> ServerResponse.noContent().build());
     }
 
@@ -45,7 +51,9 @@ public class CustomerHandler {
     public Mono<ServerResponse> getCustomerById(ServerRequest request) {
         return ServerResponse
                 .ok()
-                .body(customerService.getCustomerById(request.pathVariable("customerId")), CustomerDTO.class);
+                .body(customerService.getCustomerById(request.pathVariable("customerId"))
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND))),
+                                CustomerDTO.class);
     }
 
     public Mono<ServerResponse> listCustomer(ServerRequest request) {
