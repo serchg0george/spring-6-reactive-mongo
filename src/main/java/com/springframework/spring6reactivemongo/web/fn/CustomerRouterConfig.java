@@ -20,8 +20,9 @@ public class CustomerRouterConfig {
 
     @Bean
     public RouterFunction<ServerResponse> customerRoutes() {
-        return route().
-                GET(CUSTOMER_PATH, accept(APPLICATION_JSON), customerHandler::listCustomer)
+        return route()
+                .GET(CUSTOMER_PATH, accept(APPLICATION_JSON), customerHandler::listCustomer)
+                .GET(CUSTOMER_PATH_ID, accept(APPLICATION_JSON), customerHandler::getCustomerById)
                 .build();
     }
 }

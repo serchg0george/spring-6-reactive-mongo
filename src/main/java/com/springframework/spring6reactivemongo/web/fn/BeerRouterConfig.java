@@ -20,8 +20,9 @@ public class BeerRouterConfig {
 
     @Bean
     public RouterFunction<ServerResponse> beerRoutes() {
-        return route().
-                GET(BEER_PATH, accept(APPLICATION_JSON), beerHandler::listBeer)
+        return route()
+                .GET(BEER_PATH, accept(APPLICATION_JSON), beerHandler::listBeer)
+                .GET(BEER_PATH_ID, accept(APPLICATION_JSON), beerHandler::getBeerById)
                 .build();
     }
 }
