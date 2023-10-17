@@ -23,6 +23,7 @@ public class CustomerRouterConfig {
         return route()
                 .GET(CUSTOMER_PATH, accept(APPLICATION_JSON), customerHandler::listCustomer)
                 .GET(CUSTOMER_PATH_ID, accept(APPLICATION_JSON), customerHandler::getCustomerById)
+                .POST(CUSTOMER_PATH, accept(APPLICATION_JSON), customerHandler::createCustomer)
                 .build();
     }
 }

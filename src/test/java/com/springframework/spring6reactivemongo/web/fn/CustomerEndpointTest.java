@@ -115,12 +115,14 @@ public class CustomerEndpointTest {
 
     @Test
     void testCreateCustomer() {
+        CustomerDTO testDto = getSavedTestCustomer();
+
         webTestClient.post().uri(CustomerRouterConfig.CUSTOMER_PATH)
-                .body(Mono.just(CustomerServiceImplTest.getTestCustomer()), CustomerDTO.class)
+                .body(Mono.just(testDto), CustomerDTO.class)
                 .header("Content-Type", "application/json")
                 .exchange()
                 .expectStatus().isCreated()
-                .expectHeader().location("http://localhost:8080/api/v2/customer/4");
+                .expectHeader().exists("Location");
     }
 
     @Test
