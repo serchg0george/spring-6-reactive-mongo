@@ -1,6 +1,7 @@
 package com.springframework.spring6reactivemongo.web.fn;
 
 import com.springframework.spring6reactivemongo.domain.Customer;
+import com.springframework.spring6reactivemongo.model.BeerDTO;
 import com.springframework.spring6reactivemongo.model.CustomerDTO;
 import com.springframework.spring6reactivemongo.service.CustomerServiceImplTest;
 import org.junit.jupiter.api.MethodOrderer;
@@ -12,12 +13,12 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
@@ -146,13 +147,33 @@ public class CustomerEndpointTest {
     }
 
     @Test
+    void testCustomerByName() {
+        final String CUSTOMER_NAME = "TEST";
+        CustomerDTO testDto = getSavedTestCustomer();
+        testDto.setCustomerName(CUSTOMER_NAME);
+
+        webTestClient.post().uri(CustomerRouterConfig.CUSTOMER_PATH)
+                .body(Mono.just(testDto), CustomerDTO.class)
+                .header("Content-type", "application/json")
+                .exchange();
+
+        webTestClient.get().uri(UriComponentsBuilder
+                        .fromPath(CustomerRouterConfig.CUSTOMER_PATH)
+                        .queryParam("customerName", CUSTOMER_NAME).build().toUri())
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-type", "application/json")
+                .expectBody().jsonPath("$.size()").value(equalTo(1));
+    }
+
+    @Test
     @Order(2)
     void testListCustomers() {
         webTestClient.get().uri(CustomerRouterConfig.CUSTOMER_PATH)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-type", "application/json")
-                .expectBody().jsonPath("$.size()", hasSize(greaterThan(1)));
+                .expectBody().jsonPath("$.size()").value(greaterThan(1));
     }
 
     public CustomerDTO getSavedTestCustomer() {

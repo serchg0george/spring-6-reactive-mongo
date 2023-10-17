@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -73,7 +74,15 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> listCustomer(ServerRequest request) {
+        Flux<CustomerDTO> flux;
+
+        if (request.queryParam("customerName").isPresent()) {
+            flux = customerService.findByCustomerName(request.queryParam("customerName").get());
+        } else {
+            flux = customerService.listCustomer();
+        }
+
         return ServerResponse.ok()
-                .body(customerService.listCustomer(), CustomerDTO.class);
+                .body(flux, CustomerDTO.class);
     }
 }
