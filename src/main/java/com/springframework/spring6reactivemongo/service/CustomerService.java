@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono;
 @Service
 public interface CustomerService {
 
+    Flux<CustomerDTO> findByCustomerName(String name);
+
     Mono<CustomerDTO> findFirstByCustomerName(String name);
 
     Flux<CustomerDTO> listCustomer();
